@@ -20,12 +20,12 @@ a really dumb demo on how csrf attack works. it comprise of 2 things:
 
 ## How to make this work?
 
-    1. So essentially, download or clone this repo.
-    2. open terminal or command prompt
-    2. cd into the folder you just cloned or downloaded
-    3. then type laravel valet
+1. So essentially, download or clone this repo.
+2. open terminal or command prompt
+3. cd into the folder you just cloned or downloaded
+4. then type "valet park"
 
 The URLs;
 
-- evil.test (for the fake website)
-- bank.test (for the bank website)
+    - http://evil.test (for the fake website)
+    - http://bank.test (for the bank website)
