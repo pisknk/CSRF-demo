@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bank</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .transaction-alert {
+        background-color: #ffe0e0;
+        color: #d00;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      tr.suspicious {
+        background-color: #ffcccc;
+        font-weight: bold;
+      }
+      .clear-button {
+        background-color: #f44336;
+        color: white;
+        padding: 10px 15px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to CashG!</h1>
+    <div class="container">
+      <h2>Send Money</h2>
+      <form id="send-money-form">
+        <label>Send money to:</label><br />
+        <input
+          type="text"
+          name="account"
+          id="account"
+          value="friend-account"
+        /><br /><br />
+        <label>Amount:</label><br />
+        <input type="text" value="$100.00" readonly /><br /><br />
+        <button type="submit">Send Money</button>
+      </form>
+    </div>
+
+    <div class="container" id="transaction-container">
+      <!-- Transaction history will be filled here by JavaScript -->
+    </div>
+
+    <script>
+      // Initialize transaction history from localStorage
+      let transactions =
+        JSON.parse(localStorage.getItem("bankTransactions")) || [];
+
+      // Display transaction history
+      function showTransactionHistory() {
+        const container = document.getElementById("transaction-container");
+
+        if (transactions.length === 0) {
+          container.innerHTML =
+            "<h2>Recent Transactions</h2><p>No recent transactions.</p>";
+          return;
+        }
+
+        let html = "<h2>Recent Transactions</h2>";
+        html += `<div class='transaction-alert'>You have ${transactions.length} recent transactions!</div>`;
+        html += "<table>";
+        html += "<tr><th>Time</th><th>Recipient</th><th>Amount</th></tr>";
+
+        // Show transactions in reverse order (newest first)
+        for (const transaction of [...transactions].reverse()) {
+          const isHacker = transaction.account.toLowerCase().includes("hacker");
+          const rowClass = isHacker ? "class='suspicious'" : "";
+
+          html += `<tr ${rowClass}>`;
+          html += `<td>${transaction.time}</td>`;
+          html += `<td>${transaction.account}</td>`;
+          html += `<td>${transaction.amount}</td>`;
+          html += "</tr>";
+        }
+
+        html += "</table>";
+
+        if (transactions.length > 0) {
+          html +=
+            "<button class='clear-button' id='clear-button'>Clear Transaction History</button>";
+        }
+
+        container.innerHTML = html;
+
+        // Add event listener to the clear button
+        const clearButton = document.getElementById("clear-button");
+        if (clearButton) {
+          clearButton.addEventListener("click", clearTransactionHistory);
+        }
+      }
+
+      // Handle form submission
+      document
+        .getElementById("send-money-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const account = document.getElementById("account").value;
+
+          // Record the transaction
+          transactions.push({
+            account: account,
+            amount: "$100.00",
+            time: new Date().toLocaleString(),
+          });
+
+          // Save to localStorage
+          localStorage.setItem(
+            "bankTransactions",
+            JSON.stringify(transactions)
+          );
+
+          // Show confirmation
+          alert(`Money sent to: ${account}`);
+
+          // Update the transaction history
+          showTransactionHistory();
+        });
+
+      // Clear transaction history
+      function clearTransactionHistory() {
+        transactions = [];
+        localStorage.setItem("bankTransactions", JSON.stringify(transactions));
+        showTransactionHistory();
+      }
+
+      // Initial display of transaction history
+      showTransactionHistory();
+    </script>
+  </body>
+</html>
